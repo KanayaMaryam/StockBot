@@ -46,11 +46,12 @@ def save_all_stock_data(dest_dir, file=STOCK_LIST, verbose=True):
             print("Saving:", sym)
         subdir = dest_dir / sym
         subdir.mkdir(parents=True, exist_ok=True)
+
         def save_file(fname, data):
             with (subdir / fname).open('w') as f:
                 f.write(data)
+
         weekly_adjusted = pull_stock_data(sym, function='TIME_SERIES_WEEKLY_ADJUSTED')
         weekly = pull_stock_data(sym, function='TIME_SERIES_WEEKLY')
-        save_file('weekly_adjusted', json.dumps(weekly_adjusted))
-        save_file('weekly', json.dumps(weekly))
-
+        save_file('weekly_adjusted.json', json.dumps(weekly_adjusted))
+        save_file('weekly.json', json.dumps(weekly))
