@@ -9,7 +9,7 @@ ALPHA_VANTAGE_API_KEY = 'ES7C3KUBXFKMQMHI'
 STOCK_LIST = Path('../data/stock-list.csv')
 
 
-def pull_stock_data(ticker: str, function='TIME_SERIES_WEEKLY_ADJUSTED', retries=5):
+def pull_stock_data(ticker: str, function='TIME_SERIES_WEEKLY_ADJUSTED', retries=100):
     """
     Pulls stock data from Alpha Vantage API
     Doc Link: https://www.alphavantage.co/documentation/
@@ -19,7 +19,7 @@ def pull_stock_data(ticker: str, function='TIME_SERIES_WEEKLY_ADJUSTED', retries
     """
     for i in range(retries):
         if i != 0:
-            time.sleep(5)
+            time.sleep(10)
         resp = requests.get('https://www.alphavantage.co/query', {
             'function': function,
             'symbol': ticker,
@@ -51,7 +51,8 @@ def save_all_stock_data(dest_dir, file=STOCK_LIST, verbose=True):
             with (subdir / fname).open('w') as f:
                 f.write(data)
 
-        weekly_adjusted = pull_stock_data(sym, function='TIME_SERIES_WEEKLY_ADJUSTED')
-        weekly = pull_stock_data(sym, function='TIME_SERIES_WEEKLY')
-        save_file('weekly_adjusted.json', json.dumps(weekly_adjusted))
-        save_file('weekly.json', json.dumps(weekly))
+        try:
+            daily = pull_stock_data(sym, function='TIME_SERIES_DAILY')
+            save_file('daily.json', json.dumps(daily))
+        except IOError:
+            print("Unable to download %s" % sym)
