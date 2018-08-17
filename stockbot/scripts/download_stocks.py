@@ -1,4 +1,4 @@
-from prices import save_all_stock_data
+from stockbot.prices import save_all_stock_data
 
 
 def main():
